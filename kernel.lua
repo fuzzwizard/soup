@@ -74,7 +74,7 @@ function kernel:add_now(behaviour)
 			s:added(behaviour)
 		end
 	end
-	behaviour.k = self
+	behaviour.k = behaviour.k or self
 end
 
 function kernel:remove_now(behaviour)

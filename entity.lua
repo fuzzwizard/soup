@@ -5,7 +5,7 @@ function entity:new(kernel)
 
 	self.all_behaviours = {}
 	self.named_behaviours = {}
-	
+
 	self.subscriptions = {}
 
 	self.destroyed = false
@@ -16,7 +16,7 @@ function entity.__index(self, name)
 	if v ~= nil then
 		return v
 	end
-	local b = rawget(self, "named_behaviours")
+	local b = rawget(self, 'named_behaviours')
 	b = b and b[name]
 	if b ~= nil then
 		return b
@@ -25,8 +25,8 @@ function entity.__index(self, name)
 end
 
 function entity:add(behaviour)
-	if type(behaviour) == "string" then
-		error("attempt to add string as behaviour; did you mean add_named")
+	if type(behaviour) == 'string' then
+		error('attempt to add string as behaviour; did you mean add_named')
 	end
 	self:error_if_destroyed()
 	behaviour.e = self
@@ -42,8 +42,10 @@ end
 
 function entity:add_from_system(system_name, ...)
 	self:error_if_destroyed()
-	local behaviour = self.kernel:add_from_system(system_name, ...)
-	behaviour.e = self
+	local behaviour = assert:some(
+		self.kernel:add_from_system(system_name, ...),
+		'no behaviour', 2)
+	behaviour.e = behaviour.e or self
 	table.insert(self.all_behaviours, behaviour)
 	return behaviour
 end
@@ -65,7 +67,7 @@ end
 
 function entity:_behaviour_and_name(behaviour_or_name)
 	local behaviour, name
-	if type(behaviour_or_name) == "string" then
+	if type(behaviour_or_name) == 'string' then
 		name = behaviour_or_name
 		behaviour = self.named_behaviours[name]
 	else
@@ -106,7 +108,7 @@ end
 --so that it gets cleaned up with this entity
 function entity:attach(name_or_behaviour, behaviour_if_named)
 	local name, behaviour
-	if type(name_or_behaviour) == "string" then
+	if type(name_or_behaviour) == 'string' then
 		name = name_or_behaviour
 		behaviour = behaviour_if_named
 	else
@@ -142,7 +144,7 @@ end
 
 function entity:error_if_destroyed()
 	if self.destroyed then
-		error("entity used after destruction")
+		error('entity used after destruction')
 		return
 	end
 end
@@ -156,13 +158,13 @@ end
 function entity:subscribe(event, f)
 	self:error_if_destroyed()
 	self.kernel.event:subscribe(event, f)
-	table.insert(self.subscriptions, {event, f})
+	table.insert(self.subscriptions, { event, f })
 end
 
 function entity:subscribe_once(event, f)
 	self:error_if_destroyed()
 	f = self.kernel.event:subscribe_once(event, f)
-	table.insert(self.subscriptions, {event, f})
+	table.insert(self.subscriptions, { event, f })
 end
 
 function entity:unsubscribe(event, f)
