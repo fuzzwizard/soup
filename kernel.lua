@@ -91,7 +91,7 @@ function kernel:remove_now(behaviour)
 			s:removed(behaviour)
 		end
 	end
-	--erase refs to 
+	--erase refs to kernels and entities
 	behaviour.k = nil
 	behaviour.e = nil
 	--fire final callback

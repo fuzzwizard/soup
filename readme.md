@@ -1,3 +1,7 @@
+### NOTE: Experimental
+
+This fork of soup is opinionated and experimental and may include code that's untested or otherwise baffling. I recommend using [the upstream soup](https://github.com/1bardesign/soup) unless you're really itching to develop against a moving target. 
+
 # 🍲 Soup
 
 Soup is a messy, simple, tasty, framework thing for game development, sitting on top of love2d. For lack of something more original, I'm calling it an "entity behaviour system".
