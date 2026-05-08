@@ -74,6 +74,7 @@ function kernel:add_now(behaviour)
 			s:added(behaviour)
 		end
 	end
+	behaviour.k = self
 end
 
 function kernel:remove_now(behaviour)
@@ -90,6 +91,9 @@ function kernel:remove_now(behaviour)
 			s:removed(behaviour)
 		end
 	end
+	--erase refs to 
+	behaviour.k = nil
+	behaviour.e = nil
 	--fire final callback
 	local cb = behaviour.remove or behaviour.removed --alias allowed because it was done wrong enough times :)
 	if cb then

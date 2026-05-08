@@ -29,6 +29,7 @@ function entity:add(behaviour)
 		error("attempt to add string as behaviour; did you mean add_named")
 	end
 	self:error_if_destroyed()
+	behaviour.e = self
 	self.kernel:add(behaviour)
 	table.insert(self.all_behaviours, behaviour)
 	return behaviour
@@ -42,6 +43,7 @@ end
 function entity:add_from_system(system_name, ...)
 	self:error_if_destroyed()
 	local behaviour = self.kernel:add_from_system(system_name, ...)
+	behaviour.e = self
 	table.insert(self.all_behaviours, behaviour)
 	return behaviour
 end
