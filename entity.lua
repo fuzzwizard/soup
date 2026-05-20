@@ -42,9 +42,7 @@ end
 
 function entity:add_from_system(system_name, ...)
 	self:error_if_destroyed()
-	local behaviour = assert:some(
-		self.kernel:add_from_system(system_name, ...),
-		'no behaviour', 2)
+	local behaviour = self.kernel:add_from_system(system_name, ...)
 	behaviour.e = behaviour.e or self
 	table.insert(self.all_behaviours, behaviour)
 	return behaviour
