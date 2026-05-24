@@ -25,6 +25,11 @@ function main_loop:new(args)
 	self.ticks_per_second = frequency_counter()
 	self.frames_per_second = frequency_counter()
 	self.interpolate_render = args.interpolate_render
+	
+	--time scaling
+	self.timescale = args.timescale or 1
+	self.time = 0
+	self.ticktime = 0
 
 	self.garbage_time = args.garbage_time or 1e-3
 
@@ -47,6 +52,7 @@ function main_loop:new(args)
 
 		-- Main loop time.
 		return function()
+			local start_of_loop = love.timer.getTime()
 			self:profiler_push("frame")
 			self:profiler_push("event")
 			-- process and handle events
@@ -65,7 +71,9 @@ function main_loop:new(args)
 
 			-- get time passed, and accumulate
 			self:profiler_push("update")
-			local dt = love.timer.step()
+			local raw_dt = love.timer.step()
+			local dt = raw_dt * self.timescale
+			self.time = self.time + dt
 			-- fuzzy timing snapping
 			for _, v in ipairs {0.5, 1, 2} do
 				v = self.frametime * v
@@ -84,6 +92,7 @@ function main_loop:new(args)
 	 		--spin updates if we're ready
 	 		while frametimer > self.frametime do
 				self:profiler_push("tick")
+				self.ticktime = self.ticktime + self.frametime
 	 			frametimer = frametimer - self.frametime
 	 			love.update(self.frametime) --pass consistent dt
 	 			self.ticks_per_second:add()
@@ -119,10 +128,15 @@ function main_loop:new(args)
 				manual_gc(self.garbage_time)
 				self:profiler_pop("collect")
 
-				--give the cpu a break
-				self:profiler_push("sleep")
-				love.timer.sleep(0.001)
-				self:profiler_pop("sleep")
+				--give the cpu a break proportionate to how much spare time we have
+				local time_until_now = love.timer.getTime() - start_of_loop
+				local sleep_f = math.clamp01((time_until_now * 1.2) / self.frametime)
+				local sleep_time = math.lerp(self.frametime / 2, 0, sleep_f)
+				if sleep_time > 0 then
+					self:profiler_push("sleep")
+					love.timer.sleep(sleep_time)
+					self:profiler_pop("sleep")
+				end
 			end
 			self:profiler_pop("frame")
 
