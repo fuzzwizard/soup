@@ -93,7 +93,6 @@ function kernel:remove_now(behaviour)
 	end
 	--erase refs to kernels and entities
 	behaviour.k = nil
-	behaviour.e = nil
 	--fire final callback
 	local cb = behaviour.remove or behaviour.removed --alias allowed because it was done wrong enough times :)
 	if cb then

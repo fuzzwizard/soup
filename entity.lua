@@ -43,7 +43,7 @@ end
 function entity:add_from_system(system_name, ...)
 	self:error_if_destroyed()
 	local behaviour = self.kernel:add_from_system(system_name, ...)
-	behaviour.e = behaviour.e or self
+	behaviour.e = self
 	table.insert(self.all_behaviours, behaviour)
 	return behaviour
 end
@@ -78,6 +78,7 @@ end
 function entity:remove(behaviour_or_name)
 	local behaviour, name = self:_behaviour_and_name(behaviour_or_name)
 	if self:detach(behaviour_or_name) then
+		behaviour.e = nil
 		self.kernel:remove(behaviour)
 	end
 end
@@ -117,6 +118,7 @@ function entity:attach(name_or_behaviour, behaviour_if_named)
 	if name then
 		self.named_behaviours[name] = behaviour
 	end
+	behaviour.e = self
 end
 
 --remove everything and mark destroyed
