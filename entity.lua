@@ -78,7 +78,6 @@ end
 function entity:remove(behaviour_or_name)
 	local behaviour, name = self:_behaviour_and_name(behaviour_or_name)
 	if self:detach(behaviour_or_name) then
-		behaviour.e = nil
 		self.kernel:remove(behaviour)
 	end
 end
@@ -98,6 +97,7 @@ function entity:detach(behaviour_or_name)
 		if name then
 			self.named_behaviours[name] = nil
 		end
+		behaviour.e = nil
 		return true
 	end
 	return false
